@@ -5,6 +5,87 @@
 #include <ctime>
 #include <fstream>
 using namespace std;
+int num2(int q)
+{
+    if (q == 0)
+    {
+        return 1;
+    }
+
+    int v = 0;
+
+    while (q > 0)
+    {
+        q = q / 10;
+        v++;
+    }
+    return v;
+}
+void equal(int array[][4], int x[][4])
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            array[i][j] = x[i][j];
+        }
+    }
+}
+
+void showmax(int max, int score)
+{
+    for (int i = 1; i <= 5; i++)
+    {
+        for (int j = 1; j <= 19; j++)
+        {
+            if (i == 1 || i == 5)
+            {
+                if (j == 10)
+                {
+                    cout << " ";
+                }
+                else
+                {
+                    cout << char(254);
+                }
+            }
+            else if (i == 2 || i == 4)
+            {
+                if (j == 1 || j == 9 || j == 11 || j == 19)
+                {
+                    cout << char(219);
+                }
+                else
+                {
+                    cout << " ";
+                }
+            }
+            else if (i == 3)
+            {
+                if (j == 1 || j == 9 || j == 11 || j == 19)
+                {
+                    cout << char(219);
+                }
+
+                else if (j == 5 - num2(score) / 2)
+                {
+                    cout << score;
+                    j += num2(score) - 1;
+                }
+                else if (j == 15 - num2(max) / 2)
+                {
+                    cout << max;
+                    j += num2(max) - 1;
+                }
+                else
+                {
+                    cout << " ";
+                }
+            }
+        }
+        cout << endl;
+    }
+}
 int num(int q)
 {
     if (q == 0)
@@ -23,6 +104,18 @@ int num(int q)
         return v;
     }
 }
+int max(int array[])
+{
+    int maxim = 0;
+    for (int i = 0; i < 100; i++)
+    {
+        if (array[i] > maxim)
+        {
+            maxim = array[i];
+        }
+    }
+    return maxim;
+}
 void zero(int array[][4])
 {
     for (int i = 0; i < 4; i++)
@@ -39,7 +132,7 @@ bool checkwin(int array[][4])
     {
         for (int j = 0; j < 4; j++)
         {
-            if (array[i][j] == 1)
+            if (array[i][j] == 64)
             {
                 return true;
             }
@@ -292,12 +385,14 @@ bool checklose(int array[][4])
 int main()
 {
     int array[4][4] = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
-    int history[10];
+    int array2[4][4];
+    int history[100];
     int komaki = -1, komaki2 = -1, round = 0;
     char di = 'u';
     int score = 0;
+    int maximum = 0;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 100; i++)
     {
         history[i] = 0;
     }
@@ -317,7 +412,7 @@ int main()
         while (komaki2 == -1)
         {
 
-            cout << "enter 1 to start the game and enter 0 to finish the program" << endl;
+            cout << "enter 1 to start the game or enter 0 or any char to finish the program" << endl;
             cin >> komaki;
             if (komaki == 0)
             {
@@ -335,15 +430,16 @@ int main()
 
             system("cls");
             randomvalue(array);
+            showmax(maximum, score);
             show(array);
-            cout << "enter w,a,s,d to move numbers,0 to end program and h to watch your history:" << endl;
+            cout << "enter w,a,s,d to move numbers,0 to end program,r to restart and h to watch your history:" << endl;
             while (komaki2 == 0)
             {
                 if (checkwin(array))
                 {
                     cout << "YOU WOOOOOON!!" << endl;
                     komaki2 = -1;
-                    komaki=-1;
+                    komaki = -1;
                     zero(array);
                     continue;
                 }
@@ -351,7 +447,7 @@ int main()
                 {
                     cout << "YOU LOSE\n";
                     komaki2 = -1;
-                    komaki=-1;
+                    komaki = -1;
                     zero(array);
                     continue;
                 }
@@ -360,6 +456,12 @@ int main()
                 {
                     cout << "goodbbye";
                     return 0;
+                }
+                else if (di == 'r')
+                {
+                    komaki2 = -1;
+                    komaki = -1;
+                    zero(array);
                 }
                 else if (di == 'h')
                 {
@@ -371,63 +473,76 @@ int main()
                     }
                     myfile.close();
                 }
+                  else if (di == 'u')
+                {
+                    equal(array,array2 );
+                    system("cls");
+                    showmax(maximum,score);
+                    show(array);
+                }
                 else if (di == 'w' || di == 'a' || di == 's' || di == 'd')
                 {
                     if (checkdirection(array, di))
                     {
+                        equal(array2,array);
                         if (di == 'w')
                         {
                             system("cls");
                             score += movew(array);
                             randomvalue(array);
+                            showmax(maximum, score);
                             show(array);
-                            cout << " score :" << score << endl;
                         }
                         else if (di == 's')
                         {
                             system("cls");
                             score += moves(array);
                             randomvalue(array);
+                            showmax(maximum, score);
                             show(array);
-                            cout << " score :" << score << endl;
+                            
                         }
                         else if (di == 'a')
                         {
                             system("cls");
                             score += movea(array);
                             randomvalue(array);
+                            showmax(maximum, score);
                             show(array);
-                            cout << " score :" << score << endl;
+                           
                         }
                         else if (di == 'd')
                         {
                             system("cls");
                             score += moved(array);
                             randomvalue(array);
+                            showmax(maximum, score);
                             show(array);
-                            cout << " score :" << score << endl;
+                           
                         }
                     }
                     else
                     {
                         system("cls");
+                        showmax(maximum, score);
                         show(array);
                         cout << "you cant go this direction choose another one" << endl;
                     }
                 }
                 else
                 {
-                    cout << "pleas choose between w,a,s,d" << endl;
+                    cout << "pleas choose between w,a,s,d,r,h,0" << endl;
                 }
             }
         }
         history[round] = score;
+        maximum = max(history);
         score = 0;
         ofstream myfile("myfile.txt");
         myfile << "ten previous match score :" << endl;
         for (int i = round; i >= 0; i--)
         {
-            myfile << "round " << i+1 << " = " << history[i] << endl;
+            myfile << "round " << i + 1 << " = " << history[i] << endl;
         }
         myfile.close();
         round++;
